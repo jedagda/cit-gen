@@ -1,23 +1,23 @@
-# The Collaborative Innovation Testbed (Rapid Cyber Range)
+# The Collaborative Innovation Testbed Rapid Cyber Range Generator (CIT-GEN)
 ## Table of Contents
 * [Description](#description)
 * [Installation](#installation)
 * [Create and Run a Workshop](#create-and-run-a-workshop)
 * [Linux Live Disc](#linux-live-disc)
-* [CIT-RCR Construct Details](#cit-rcr-construct-details)
+* [CIT-GEN Construct Details](#cit-gen-construct-details)
 
 ### Description
-CIT-RCR uses the Flask python microframework as the web server gateway interface (WSGI) application.
+CIT-GEN uses the Flask python microframework as the web server gateway interface (WSGI) application.
 This provides similar functionality as a fast common gateway interface (FCGI) application that allows 
 multiple, concurrent connections to the web application.
 
 Gevent is used to host the standalone flask WSGI container. This handles the concurrent WSGI behavior. It uses 
 greenlet to provide high-level synchronous API on top of libev event loop. 
 
-CIT-RCR is composed of two main components: The Workshop Creator and the Workshop Manager.
+CIT-GEN is composed of two main components: The Workshop Creator and the Workshop Manager.
 
 ### Installation
-CIT-RCR has been tested on:
+CIT-GEN has been tested on:
 * Windows 7+ (32 and 64-bit), Windows Server 2012 (64-bit)
 * Ubuntu 16.04 LTE (64-bit)
 
@@ -33,7 +33,7 @@ These are automatically installed with the included install script
 * PyGI based on [this Windows Installer](https://sourceforge.net/projects/pygobjectwin32/files/pygi-aio-3.10.2-win32_rev18-setup.exe/download)
 
 ##### Windows Instructions
-In the directory where you extracted CIT-RCR:
+In the directory where you extracted CIT-GEN:
 ```
 cd workshop-creator
 ./install_win.bat
@@ -41,7 +41,7 @@ cd workshop-creator
 To create and run a workshop, proceed to [Create and Run a Workshop](#create-and-run-a-workshop).
 
 ##### Linux
-In the directory where you extracted CIT-RCR:
+In the directory where you extracted CIT-GEN:
 ```
 sudo -s
 cd workshop-creator
@@ -65,8 +65,8 @@ source ./install_linux.sh
 To create and run a workshop, proceed to [Create and Run a Workshop](#create-and-run-a-workshop).
 
 ### Create and Run a Workshop
-CIT-RCR runs on a flask webserver and a backend monitor for virtualbox VMs.
-Before starting, install CIT-RCR as described [here](#installation).
+CIT-GEN runs on a flask webserver and a backend monitor for virtualbox VMs.
+Before starting, install CIT-GEN as described [here](#installation).
 
 1. Ensure that you have one or more virtual machines installed and that they have at least one snapshot (only the latest is used).
     
@@ -97,11 +97,11 @@ Before starting, install CIT-RCR as described [here](#installation).
 ```
 http://localhost:8080
 ```
-If accessing the CIT-RCR server from the network (e.g., when hosting workshops for participants), from the remote machine's browser, substitute `localhost` for the IP address of the machine running the server.
+If accessing the CIT-GEN server from the network (e.g., when hosting workshops for participants), from the remote machine's browser, substitute `localhost` for the IP address of the machine running the server.
 
 ### Linux Live Disc
-A live disc pre-installed with CIT-RCR is available [here](https://goo.gl/nRrR2v).
-The following are the steps for running CIT-RCR on the live disc.
+A live disc pre-installed with CIT-GEN is available [here](https://goo.gl/nRrR2v).
+The following are the steps for running CIT-GEN on the live disc.
 ##### DHCP Service Configuration (Optional)
 The DHCP service is pre-configured. To enable the DHCP server execute the following steps:
 
@@ -150,16 +150,16 @@ The VPN server is pre-configured. To enable the PPTPD VPN server execute the fol
 sudo service pptpd start
 ```
 
-##### Start CIT-RCR (Required)
+##### Start CIT-GEN (Required)
 1. Open a terminal window and execute the following commands:
 ```
 sudo -s
-cd /root/cit-rcr/workshop-creator
+cd /root/cit-gen/workshop-creator
 ./start_creator.sh
 ```
 To create and run a workshop, proceed to [Create and Run a Workshop](#create-and-run-a-workshop).
   
-### CIT-RCR Construct Details
+### CIT-GEN Construct Details
 ##### Workshop Creator
 The Workshop Creator automates the creation of workshop units (sets of VMs that compose a cybersecurity scenario). This includes the cloning process.
 During the cloning process, this component adjusts VRDP ports and internal
@@ -194,7 +194,7 @@ workshop-creator/bin/workshop-restore.py (restores most recent snapshot of VMs i
 
 ##### Workshop Manager
 
-The Workshop Manager component of CIT-RCR is a multi-threaded process that
+The Workshop Manager component of CIT-GEN is a multi-threaded process that
 monitors VRDP connections for each workshop unit. It also contains a web service
 with a simple front-end that is implemented using the Flask micro web development
 framework. When participants navigate to the front-end they are shown the
@@ -224,4 +224,4 @@ cd workshop-manager
 
 ##### Workshop Units
 
-The CIT-RCR uses the VirtualBox API to monitor and update groups of VMs (that compose a workshop unit). Users may connect to these units using remote desktop. When a user disconnects, CIT-RCR will restore all VMs in a unit from the most recent snapshot.
+The CIT-GEN uses the VirtualBox API to monitor and update groups of VMs (that compose a workshop unit). Users may connect to these units using remote desktop. When a user disconnects, CIT-GEN will restore all VMs in a unit from the most recent snapshot.
