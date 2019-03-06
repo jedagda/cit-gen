@@ -100,7 +100,7 @@ http://localhost:8080
 If accessing the CIT-GEN server from the network (e.g., when hosting workshops for participants), from the remote machine's browser, substitute `localhost` for the IP address of the machine running the server.
 
 ### Linux Live Disc
-A live disc pre-installed with CIT-GEN is available [here](https://goo.gl/n1WvS).
+A live disc pre-installed with CIT-GEN is available [here](https://goo.gl/n1YWvS).
 The following are the steps for running CIT-GEN on the live disc.
 ##### DHCP Service Configuration (Optional)
 The DHCP service is pre-configured. To enable the DHCP server execute the following steps:
