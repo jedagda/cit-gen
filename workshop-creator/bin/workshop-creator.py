@@ -2,6 +2,11 @@ import subprocess
 import xml.etree.ElementTree as ET
 import sys
 
+#needed for warningdialog
+from src.gui.dialogs.WarningDialog import WarningDialog
+import gi; gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
 def printError(message):
     print "\r\n\r\n!!!!!!!!!!\r\nERROR:\r\n", message, "\r\n!!!!!!!!!!\r\n"
     print "Exiting..."
@@ -65,6 +70,7 @@ for vm in vmset.findall('vm'):
                 except Exception:
                     printError(
                         "Using the link clone option requires that VMs contain a snapshot. No snapshot found for vm:" + vmname)
+                    WarningDialog(Gtk.Window(), "You need snapshots to clone!")
                     print "Exiting..."
                     exit()
             else:
