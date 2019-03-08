@@ -415,16 +415,19 @@ class Session:
         # this will copy the newly created rdp files to the manager folder
         self.overwriteRDPToManagerSaveDirectory()
 
-    def softSaveVM(self, inVMName, inVRDPEnabled, inInternalnetBasenameList):
+    # Maybe add parameter here, then add a check in line 424 and/or 429
+    def softSaveVM(self, inVMName, inVRDPEnabled, inInternalnetBasenameList, genericDriverList):
         logging.debug("softSaveVM() initiated ")
         self.somethingChanged = ((self.currentVM.name != inVMName) or (self.currentVM.vrdpEnabled != inVRDPEnabled))
         if not self.somethingChanged:
-            self.somethingChanged = (self.currentVM.internalnetBasenameList != inInternalnetBasenameList)
+            self.somethingChanged = ((self.currentVM.internalnetBasenameList != inInternalnetBasenameList) or
+                (self.currentVM.genericDriverList != genericDriverList))  ##### ADDED THIS LINE
 
         if self.somethingChanged:
             self.currentVM.name = inVMName
             self.currentVM.vrdpEnabled = inVRDPEnabled
             self.currentVM.internalnetBasenameList = inInternalnetBasenameList
+            self.currentVM.genericDriverList = genericDriverList ##### ADDED THIS LINE
             self.hardSave()
             self.runRDPScript()
 
@@ -459,9 +462,14 @@ class Session:
                 vm_element = etree.SubElement(vm_set_element, "vm")
                 etree.SubElement(vm_element, "name").text = vm.name
                 etree.SubElement(vm_element, "vrdp-enabled").text = vm.vrdpEnabled
-                for internalnet in vm.internalnetBasenameList:
-                    logging.debug("hardSave(): adding internalnet-basename: " + internalnet)
-                    etree.SubElement(vm_element, "internalnet-basename").text = internalnet
+                if(len(vm.internalnetBasenameList) > 0):
+                    for internalnet in vm.internalnetBasenameList:
+                        logging.debug("hardSave(): adding internalnet-basename: " + internalnet)
+                        etree.SubElement(vm_element, "internalnet-basename").text = internalnet
+                if(len(vm.genericDriverList) > 0):
+                    for genericDriver in vm.genericDriverList:
+                        logging.debug("hardSave(): adding generic-driver: " + genericDriver)
+                        etree.SubElement(vm_element, "generic-driver").text = genericDriver
 
             self.holdDirectory = os.path.join(WORKSHOP_MATERIAL_DIRECTORY, workshop.baseGroupName)
             if not os.path.exists(self.holdDirectory):
