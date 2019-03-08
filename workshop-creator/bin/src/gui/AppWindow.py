@@ -320,12 +320,18 @@ class AppWindow(Gtk.ApplicationWindow):
                 if self.session.currentVM.vrdpEnabled == "false":
                     self.holdVRDP = 1
                 self.vmWidget.vrdpEnabledEntry.set_active(self.holdVRDP)
-                self.vmWidget.loadInets(self.session.currentVM.internalnetBasenameList)
+                self.vmWidget.loadInets(self.session.currentVM.internalnetBasenameList,self.session.currentVM.genericDriverList)
+
 
                 if len(self.vmWidget.inetBasenameWidgetList) > 0:
                     for k, rientry in enumerate(self.vmWidget.inetBasenameWidgetList):
                         rientry.removeInetButtonHandlerID = \
                             rientry.removeInetButton.connect("clicked", self.removeInetEventHandler, k)
+
+                if len(self.vmWidget.udpTunnelWidgetList) > 0:
+                    for k, rientry in enumerate(self.vmWidget.udpTunnelWidgetList):
+                        rientry.removeInetButtonHandlerID = \
+                            rientry.removeInetButton.connect("clicked", self.removeInetEventHandler, len(self.vmWidget.inetBasenameWidgetList)+k)
 
             elif self.session.currentMaterial != None:
                 self.scrolledInnerBox.pack_start(self.materialWidget, True, True, PADDING)
@@ -376,15 +382,26 @@ class AppWindow(Gtk.ApplicationWindow):
             if self.session.currentVM != None:
                 if not self.isRemoveVM:
                     self.currentModel.set(self.currentIter, 0, VM_TREE_LABEL + self.vmWidget.nameEntry.get_text())
+                
                 self.holdInternalnetBasenameList = []
+                self.holdGenericDriverList = []
                 for inetWidget in self.vmWidget.inetBasenameWidgetList:
-                    self.holdInternalnetBasenameList.append(inetWidget.entry.get_text())
+                    if(inetWidget.internalnetButton.get_active()):
+                        self.holdInternalnetBasenameList.append(inetWidget.entry.get_text())
+                    else:
+                        self.holdGenericDriverList.append(inetWidget.entry.get_text())
+
+                for udpTunnelWidget in self.vmWidget.udpTunnelWidgetList:
+                    if(udpTunnelWidget.udpTunnelButton.get_active()):
+                        self.holdGenericDriverList.append(udpTunnelWidget.entry.get_text())
+                    else:
+                        self.holdInternalnetBasenameList.append(udpTunnelWidget.entry.get_text())
 
                 self.holdVRDP = "true"
                 if self.vmWidget.vrdpEnabledEntry.get_active_text() == "false":
                     self.holdVRDP = "false"
                 self.session.softSaveVM(self.vmWidget.nameEntry.get_text(), self.holdVRDP,
-                                        self.holdInternalnetBasenameList)
+                                        self.holdInternalnetBasenameList, self.holdGenericDriverList)
             elif self.session.currentMaterial != None:
                 if not self.isRemoveVM:
                     self.currentModel.set(self.currentIter, 0,
@@ -411,31 +428,56 @@ class AppWindow(Gtk.ApplicationWindow):
         logging.debug("copying rdp files to manager directory")
         self.session.overwriteRDPToManagerSaveDirectory()
 
+    def radioButtonEventHandler(self, menuItem, data):
+        logging.debug("addInetEventHandler() initiated: " + str(menuItem))
+
+
+
     def addInetEventHandler(self, menuItem):
         logging.debug("addInetEventHandler() initiated: " + str(menuItem))
         inet = self.vmWidget.addInet()
         inet.removeInetButtonHandlerID = inet.removeInetButton.connect("clicked",
                                                                        self.removeInetEventHandler,
-                                                                       len(self.vmWidget.inetBasenameWidgetList) - 1)
+                                                                       len(self.vmWidget.udpTunnelWidgetList)
+                                                                       + len(self.vmWidget.inetBasenameWidgetList) - 1)
+
         self.actionBox.show_all()
 
     def removeInetEventHandler(self, menuItem, *data):
         logging.debug("removeInetEventHandler() initiated: " + str(menuItem) + " " + str(data))
 
-        if len(self.vmWidget.inetBasenameWidgetList) > 1:
-            self.vmWidget.removeInet(data[0])
+        if(data[0] < len(self.vmWidget.inetBasenameWidgetList)):
+            if len(self.vmWidget.inetBasenameWidgetList) > 1:
+                self.vmWidget.removeInet(data[0])
 
-            # Adjust button handlers for remaining inets
-            i = data[0]
-            for inet in self.vmWidget.inetBasenameWidgetList[i:]:
-                inet.removeInetButton.handler_disconnect(inet.removeInetButtonHandlerID)
-                inet.removeInetButtonHandlerID = inet.removeInetButton.connect("clicked", self.removeInetEventHandler, i)
-                i += 1
-            self.actionBox.show_all()
+                # Adjust button handlers for remaining inets
+                i = data[0]
+                for inet in self.vmWidget.inetBasenameWidgetList[i:]:
+                    inet.removeInetButton.handler_disconnect(inet.removeInetButtonHandlerID)
+                    inet.removeInetButtonHandlerID = inet.removeInetButton.connect("clicked", self.removeInetEventHandler, i)
+                    i += 1
+                
+                for tunnel in self.vmWidget.udpTunnelWidgetList:
+                    tunnel.removeInetButton.handler_disconnect(tunnel.removeInetButtonHandlerID)
+                    tunnel.removeInetButtonHandlerID = tunnel.removeInetButton.connect("clicked", self.removeInetEventHandler, i)
+                    i += 1
+                self.actionBox.show_all()
+
+
+            else:
+                WarningDialog(self, "There must be at least one Internalnet Basename.")
+                return
 
         else:
-            WarningDialog(self, "There must be at least one Internalnet Basename.")
-            return
+            print "\n\ndata[0] = ", data[0], "\n\n"
+            self.vmWidget.removeTunnel(data[0] - len(self.vmWidget.inetBasenameWidgetList))
+
+            i = data[0] - len(self.vmWidget.inetBasenameWidgetList)
+            for tunnel in self.vmWidget.udpTunnelWidgetList[i:]:
+                tunnel.removeInetButton.handler_disconnect(tunnel.removeInetButtonHandlerID)
+                tunnel.removeInetButtonHandlerID = tunnel.removeInetButton.connect("clicked", self.removeInetEventHandler, i + len(self.vmWidget.inetBasenameWidgetList))
+                i += 1
+            self.actionBox.show_all()
 
     def treeViewActionEvent(self, treeView, event):
         logging.debug("treeViewActionEvent() initiated: " + str(event))

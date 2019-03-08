@@ -61,10 +61,19 @@ class Workshop:
         for vm in vmset.findall('vm'):
             currentVM = VM(vm.find('name').text)
             currentVM.vrdpEnabled = vm.find('vrdp-enabled').text
-            internalnetList = vm.findall('internalnet-basename')
-            currentVM.internalnetBasenameList=[]
-            for internalnet in internalnetList:
-                currentVM.internalnetBasenameList.append(internalnet.text)
+            
+
+            if len(vm.findall('internalnet-basename')) > 0:
+                internalnetsList = vm.findall('internalnet-basename')
+                currentVM.internalnetBasenameList = []
+                for internalnet in internalnetsList:
+                    currentVM.internalnetBasenameList.append(internalnet.text)
+            if len(vm.findall('generic-driver')) > 0:
+                generic_drivers_list = vm.findall('generic-driver')
+                currentVM.genericDriverList = []
+                for generic_driver in generic_drivers_list:
+                    currentVM.genericDriverList.append(generic_driver.text)
+
             self.vmList.append(currentVM)
 
         for material in vmset.findall('material'):

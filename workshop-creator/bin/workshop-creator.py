@@ -44,7 +44,7 @@ for vm in vmset.findall('vm'):
             exit()
         
         if len(vm.findall('internalnet-basename')) > 0:
-            print internalnets
+            internalnets = vm.findall('internalnet-basename')
             internalnetNames = []
             for internalnet in internalnets:
                 internalnetNames.append(internalnet.text+ myBaseOutname + str(i))
@@ -104,6 +104,16 @@ for vm in vmset.findall('vm'):
                 netNum+=1
                 # commented out the next line because an error about non-mutable state is reported even thought it still completes successfully
                 # print(result)
+        else:
+            # add generic driver/udp tunnel thing here.
+            for generic_driver_name in generic_driver_names:
+                udpTunnelCmd1 = [pathToVirtualBox, "modifyvm", newvmName, "--nic"+str(netNum), "generic", "--nicgenericdrv"+str(netNum), "UDPTunnel", "--nicproperty"+str(netNum), "dest=10.0.0.2", "--nicproperty"+str(netNum), "sport=10001", "--nicproperty"+str(netNum), "dport=10002"]
+                print("\nsetting up generic driver network adapter")
+                print("executing: ")
+                print(udpTunnelCmd1)
+                result = subprocess.check_output(udpTunnelCmd1)
+                netNum+=1
+
 
         # for some reason, the vms aren't placed into a group unless we execute an additional modify command
         try:

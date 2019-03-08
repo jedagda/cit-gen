@@ -2,6 +2,7 @@ import logging
 import gi; gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from src.gui.widgets.InternalnetBasenameWidget import InternalnetBasenameWidget
+from src.gui.widgets.NetworkAdapterWidget import NetworkAdapterWidget
 from src.gui_constants import BOX_SPACING, PADDING
 
 
@@ -21,6 +22,7 @@ class VMWidget(Gtk.Box):
         self.vrdpEnabledHorBox = Gtk.Box(spacing=BOX_SPACING)
         self.iNetVerBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=BOX_SPACING)
         self.inetBasenameWidgetList = []
+        self.udpTunnelWidgetList = []
 
         # Declaration of labels
         self.nameLabel = Gtk.Label("Name:")
@@ -33,7 +35,7 @@ class VMWidget(Gtk.Box):
         self.vrdpEnabledEntry = Gtk.ComboBoxText()
         self.vrdpEnabledEntry.insert_text(0, "true")
         self.vrdpEnabledEntry.insert_text(1, "false")
-        self.addInetButton = Gtk.Button.new_with_label("Add Internalnet Basename")
+        self.addInetButton = Gtk.Button.new_with_label("Add Network Adaptor")
 
         self.saveButton = Gtk.Button(label="Save Changes")
 
@@ -59,7 +61,7 @@ class VMWidget(Gtk.Box):
         self.nameHorBox.pack_end(self.nameEntry, True, True, PADDING)
         self.vrdpEnabledHorBox.pack_end(self.vrdpEnabledEntry, True, True, PADDING)
 
-    def loadInets(self, internalNetList):
+    def loadInets(self, internalNetList, udpTunnelList):
 
         # Clear the box of widgets
         for widget in self.iNetVerBox.get_children():
@@ -67,22 +69,39 @@ class VMWidget(Gtk.Box):
 
         # Clear the list of widgets
         self.inetBasenameWidgetList = []
+        self.udpTunnelWidgetList = []
 
         self.sizeOfList=len(internalNetList)
         for internalNet in internalNetList:
-            inetWidget = InternalnetBasenameWidget()
+            inetWidget = NetworkAdapterWidget() #InternalnetBasenameWidget()
             inetWidget.entry.set_text(internalNet)
+            inetWidget.internalnetButton.set_active(True)
 
             self.inetBasenameWidgetList.append(inetWidget)
             self.iNetVerBox.pack_start(inetWidget, False, False, 0)
+
+        self.sizeOfList=len(udpTunnelList)
+        for udpTunnel in udpTunnelList:
+            udpTunnelWidget = NetworkAdapterWidget()
+            udpTunnelWidget.entry.set_text(udpTunnel)
+            udpTunnelWidget.udpTunnelButton.set_active(True)
+
+            self.udpTunnelWidgetList.append(udpTunnelWidget)
+            self.iNetVerBox.pack_start(udpTunnelWidget, False, False, 0)
 
     def initializeSignals(self, eventHandler):
         for widget in self.inetBasenameWidgetList:
             widget.connect("button-press-event", eventHandler)
 
+        for widget in self.udpTunnelWidgetList:
+            widget.connect("button-press-event", eventHandler)
+
+    ### Changed to NetworkAdapterWidget thing
+    # I think I should change the name of the function
     def addInet(self):
-        inet = InternalnetBasenameWidget()
-        inet.entry.set_text("default_inet")
+        inet = NetworkAdapterWidget()
+        inet.entry.set_text("default__net")
+
         self.inetBasenameWidgetList.append(inet)
         self.iNetVerBox.pack_start(inet, False, False, 0)
         return inet
@@ -92,3 +111,8 @@ class VMWidget(Gtk.Box):
         if len(self.inetBasenameWidgetList) > 1:
             self.iNetVerBox.remove(self.inetBasenameWidgetList[inetNumber])
             self.inetBasenameWidgetList.remove(self.inetBasenameWidgetList[inetNumber])
+
+    def removeTunnel(self, tunnelNumber):
+
+        self.iNetVerBox.remove(self.udpTunnelWidgetList[tunnelNumber])
+        self.udpTunnelWidgetList.remove(self.udpTunnelWidgetList[tunnelNumber])
