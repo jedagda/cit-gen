@@ -368,7 +368,7 @@ class Session:
                 self.workshopList.append(workshop)
 
     def softSaveWorkshop(self, inPath, inIPAddress, inBaseGroupName, inCloneNumber, inCloneSnapshots, inLinkedClones,
-                         inBaseOutName, inVRDPBaseport):
+                         inBaseOutName, inVRDPBaseport, inBaseAddress):
         logging.debug("softSaveWorkshop() initiated")
         self.oldNumOfClones = self.currentWorkshop.numOfClones
         self.oldCloneSnapshots = self.currentWorkshop.cloneSnapshots
@@ -377,6 +377,7 @@ class Session:
         logging.debug("softSaveWorkshop(): old name: " + self.oldBaseGroupName + " New: " + inBaseGroupName)
         self.oldBaseOutName = self.currentWorkshop.baseOutName
         self.oldVRDPBaseport = self.currentWorkshop.vrdpBaseport
+        self.oldBaseAddress = self.currentWorkshop.baseAddress
 
         self.currentWorkshop.pathToVBoxManage = inPath
         self.currentWorkshop.ipAddress = inIPAddress
@@ -386,13 +387,15 @@ class Session:
         self.currentWorkshop.linkedClones = inLinkedClones
         self.currentWorkshop.baseOutName = inBaseOutName
         self.currentWorkshop.vrdpBaseport = inVRDPBaseport
+        self.currentWorkshop.baseAddress = inBaseAddress
 
         if (self.oldNumOfClones != self.currentWorkshop.numOfClones) or (
                 self.oldCloneSnapshots != self.currentWorkshop.cloneSnapshots) or (
                 self.oldLinkedClones != self.currentWorkshop.linkedClones) or (
                 self.oldBaseGroupName != self.currentWorkshop.baseGroupName) or (
                 self.oldBaseOutName != self.currentWorkshop.baseOutName) or (
-                self.oldVRDPBaseport != self.currentWorkshop.vrdpBaseport):
+                self.oldVRDPBaseport != self.currentWorkshop.vrdpBaseport) or (
+                self.oldBaseAddress != self.currentWorkshop.baseAddress):
             self.hardSave()
             self.runRDPScript()
 
@@ -415,19 +418,18 @@ class Session:
         # this will copy the newly created rdp files to the manager folder
         self.overwriteRDPToManagerSaveDirectory()
 
-    # Maybe add parameter here, then add a check in line 424 and/or 429
     def softSaveVM(self, inVMName, inVRDPEnabled, inInternalnetBasenameList, genericDriverList):
         logging.debug("softSaveVM() initiated ")
         self.somethingChanged = ((self.currentVM.name != inVMName) or (self.currentVM.vrdpEnabled != inVRDPEnabled))
         if not self.somethingChanged:
             self.somethingChanged = ((self.currentVM.internalnetBasenameList != inInternalnetBasenameList) or
-                (self.currentVM.genericDriverList != genericDriverList))  ##### ADDED THIS LINE
+                (self.currentVM.genericDriverList != genericDriverList))  
 
         if self.somethingChanged:
             self.currentVM.name = inVMName
             self.currentVM.vrdpEnabled = inVRDPEnabled
             self.currentVM.internalnetBasenameList = inInternalnetBasenameList
-            self.currentVM.genericDriverList = genericDriverList ##### ADDED THIS LINE
+            self.currentVM.genericDriverList = genericDriverList 
             self.hardSave()
             self.runRDPScript()
 
@@ -455,6 +457,7 @@ class Session:
             etree.SubElement(vm_set_element, "linked-clones").text = workshop.linkedClones
             etree.SubElement(vm_set_element, "base-outname").text = workshop.baseOutName
             etree.SubElement(vm_set_element, "vrdp-baseport").text = workshop.vrdpBaseport
+            etree.SubElement(vm_set_element, "base-address").text = workshop.baseAddress
 
             # Iterate through list of VMs and whether vrdp is enabled for that vm
             for vm in workshop.vmList:

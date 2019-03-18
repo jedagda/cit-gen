@@ -14,7 +14,6 @@ class VM:
         self.internalnetBasenameList.append("intnet")
 
         self.genericDriverList = [] # String
-        self.genericDriverList.append("UDPTunnel")
 
     def addInet(self, inetName):
         logging.debug("addInet(): appending inetName to VM: " + self.name)

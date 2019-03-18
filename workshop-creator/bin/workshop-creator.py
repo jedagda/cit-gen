@@ -30,8 +30,16 @@ baseOutname = vmset.find('base-outname').text
 
 vrdpBaseport = vmset.find('vrdp-baseport').text
 
+baseAddress = vmset.find('base-address').text
+
+# Makes sure last byte in IP address is within correct range
+if(baseAddress < 0 or baseAddress > 255):
+    printError("Make sure the Base Address is between 0-255")
+    exit()
+
 for vm in vmset.findall('vm'):
     myBaseOutname = baseOutname
+    myBaseAddress = baseAddress
     for i in range(1, numClones + 1):
         vmname = vm.find('name').text
 
@@ -49,11 +57,12 @@ for vm in vmset.findall('vm'):
             for internalnet in internalnets:
                 internalnetNames.append(internalnet.text+ myBaseOutname + str(i))
             print "Internal net names: ", internalnetNames
-        else:
+        if len(vm.findall('generic-driver')) > 0:
             generic_drivers = vm.findall('generic-driver')
             generic_driver_names = []
             for generic_driver in generic_drivers:
                 generic_driver_names.append(generic_driver.text + str(i))
+            host_id = str(int(myBaseAddress) + i-1)
             print "Generic Driver names: ", generic_driver_names
 
         # clone the vm and give it a name ending with myBaseOutname
@@ -104,14 +113,13 @@ for vm in vmset.findall('vm'):
                 netNum+=1
                 # commented out the next line because an error about non-mutable state is reported even thought it still completes successfully
                 # print(result)
-        else:
-            # add generic driver/udp tunnel thing here.
+        if len(vm.findall('generic-driver')) > 0:
             for generic_driver_name in generic_driver_names:
-                udpTunnelCmd1 = [pathToVirtualBox, "modifyvm", newvmName, "--nic"+str(netNum), "generic", "--nicgenericdrv"+str(netNum), "UDPTunnel", "--nicproperty"+str(netNum), "dest=10.0.0.2", "--nicproperty"+str(netNum), "sport=10001", "--nicproperty"+str(netNum), "dport=10002"]
+                udpTunnelCmd = [pathToVirtualBox, "modifyvm", newvmName, "--nic"+str(netNum), "generic", "--nicgenericdrv"+str(netNum), "UDPTunnel", "--nicproperty"+str(netNum), ("dest=10.0.0."+host_id), "--nicproperty"+str(netNum), ("sport="+host_id), "--nicproperty"+str(netNum), ("dport="+host_id)]
                 print("\nsetting up generic driver network adapter")
                 print("executing: ")
-                print(udpTunnelCmd1)
-                result = subprocess.check_output(udpTunnelCmd1)
+                print(udpTunnelCmd)
+                result = subprocess.check_output(udpTunnelCmd)
                 netNum+=1
 
 

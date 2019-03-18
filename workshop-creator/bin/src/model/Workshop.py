@@ -21,6 +21,7 @@ class Workshop:
         self.linkedClones = "true" # Bool
         self.baseOutName = "101" # String
         self.vrdpBaseport = "1011" # int
+        self.baseAddress = "101" # String
 
         self.vmList = [] # VM
         if vmName!=None:
@@ -57,6 +58,7 @@ class Workshop:
         self.linkedClones = vmset.find('linked-clones').text
         self.baseOutName = vmset.find('base-outname').text
         self.vrdpBaseport = vmset.find('vrdp-baseport').text
+        self.baseAddress = vmset.find('base-address').text
 
         for vm in vmset.findall('vm'):
             currentVM = VM(vm.find('name').text)

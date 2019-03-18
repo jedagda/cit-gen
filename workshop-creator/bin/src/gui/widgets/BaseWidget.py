@@ -24,6 +24,7 @@ class BaseWidget(Gtk.Box):
         self.linkedClonesHorBox = Gtk.Box(spacing=BOX_SPACING)
         self.baseOutnameHorBox = Gtk.Box(spacing=BOX_SPACING)
         self.vrdpBaseportHorBox = Gtk.Box(spacing=BOX_SPACING)
+        self.baseAddressHorBox = Gtk.Box(spacing=BOX_SPACING)
 
         # Declaration of labels
         self.vBoxManageLabel =      Gtk.Label("Path To VBoxManager:")
@@ -34,6 +35,7 @@ class BaseWidget(Gtk.Box):
         self.linkedClonesLabel =    Gtk.Label("Linked Clones:        ")
         self.baseOutnameLabel =     Gtk.Label("Base Outname:       ")
         self.vrdpBaseportLabel =    Gtk.Label("VRDP Baseport:       ")
+        self.baseAddressLabel =     Gtk.Label("Base Address:       ")
 
         # Declaration of entrys
         self.vBoxManageEntry = Gtk.Entry()
@@ -53,6 +55,7 @@ class BaseWidget(Gtk.Box):
         self.linkedClonesEntry.insert_text(1, "false")
         self.baseOutnameEntry = Gtk.Entry()
         self.vrdpBaseportEntry = Gtk.Entry()
+        self.baseAddressEntry = Gtk.Entry()
 
         self.chooseVBoxPathButton = Gtk.Button("...")
 
@@ -79,6 +82,7 @@ class BaseWidget(Gtk.Box):
         self.outerVertBox.add(self.cloneSnapshotsHorBox)
         self.outerVertBox.add(self.baseOutnameHorBox)
         self.outerVertBox.add(self.vrdpBaseportHorBox)
+        self.outerVertBox.add(self.baseAddressHorBox)
         self.outerBox.pack_end(self.saveButton, False, False, PADDING)
 
     def initializeLabels(self):
@@ -90,6 +94,7 @@ class BaseWidget(Gtk.Box):
         self.linkedClonesHorBox.pack_start(self.linkedClonesLabel, False, False, PADDING)
         self.baseOutnameHorBox.pack_start(self.baseOutnameLabel, False, False, PADDING)
         self.vrdpBaseportHorBox.pack_start(self.vrdpBaseportLabel, False, False, PADDING)
+        self.baseAddressHorBox.pack_start(self.baseAddressLabel, False, False, PADDING)
 
     def initializeEntrys(self):
         self.vBoxManageHorBox.pack_end(self.vBoxManageEntry, True, True, PADDING)
@@ -100,3 +105,4 @@ class BaseWidget(Gtk.Box):
         self.linkedClonesHorBox.pack_end(self.linkedClonesEntry, True, True, PADDING)
         self.baseOutnameHorBox.pack_end(self.baseOutnameEntry, True, True, PADDING)
         self.vrdpBaseportHorBox.pack_end(self.vrdpBaseportEntry, True, True, PADDING)
+        self.baseAddressHorBox.pack_end(self.baseAddressEntry, True, True, PADDING)
