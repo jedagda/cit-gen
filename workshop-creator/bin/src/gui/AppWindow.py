@@ -707,7 +707,9 @@ class AppWindow(Gtk.ApplicationWindow):
         dialog = Gtk.FileChooserDialog("Please select a EBX archive to import.", self,
                                        Gtk.FileChooserAction.OPEN, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
                                                                     Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
-
+        ebx_filter=Gtk.FileFilter()
+        ebx_filter.add_pattern("*.ebx")
+        dialog.add_filter(ebx_filter)
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:

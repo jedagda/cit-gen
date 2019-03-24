@@ -1,1 +1,6 @@
-
+.idea/*
+workshop-creator/creator-container/*
+workshop-creator/bin/workshop_creator_gui_resources/*
+workshop-creator/start_creator.bat
+workshop-manager/*
+*.pyc
