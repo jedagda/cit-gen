@@ -33,9 +33,9 @@ vrdpBaseport = vmset.find('vrdp-baseport').text
 baseAddress = vmset.find('base-address').text
 
 # Makes sure last byte in IP address is within correct range
-if(baseAddress < 0 or baseAddress > 255):
-    printError("Make sure the Base Address is between 0-255")
-    exit()
+# if(baseAddress < 0 or baseAddress > 255):
+#     printError("Make sure the Base Address is between 0-255")
+#     exit()
 
 for vm in vmset.findall('vm'):
     myBaseOutname = baseOutname
