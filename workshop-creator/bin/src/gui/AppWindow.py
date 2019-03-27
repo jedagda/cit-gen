@@ -252,7 +252,7 @@ class AppWindow(Gtk.ApplicationWindow):
 
             self.scrolledInnerBox.pack_start(self.baseWidget, True, True, PADDING)
 
-            self.baseWidget.vBoxManageEntry.set_text(self.session.currentWorkshop.pathToVBoxManage)
+            self.baseWidget.vBoxManageEntry.set_text(VBOXMANAGE_DIRECTORY)
             self.baseWidget.ipAddressEntry.set_text(self.session.currentWorkshop.ipAddress)
             self.baseWidget.baseGroupNameEntry.set_text(self.session.currentWorkshop.baseGroupName)
             self.baseWidget.numClonesEntry.set_value(int(float(self.session.currentWorkshop.numOfClones)))
