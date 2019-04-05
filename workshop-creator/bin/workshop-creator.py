@@ -37,10 +37,11 @@ vrdpBaseport = vmset.find('vrdp-baseport').text
 
 baseAddress = vmset.find('base-address').text
 
-# Makes sure last byte in IP address is within correct range
-# if(baseAddress < 0 or baseAddress > 255):
-#     printError("Make sure the Base Address is between 0-255")
-#     exit()
+# Checking if IP addresses of the clones are between 0 and 255
+if(int(baseAddress) <= 0 or (int(baseAddress) + int(numClones) - 1) >= 255):
+    WarningDialog(Gtk.Window(), "Make sure all clone IP addresses are between 0-255")
+    exit()
+
 
 for vm in vmset.findall('vm'):
     myBaseOutname = baseOutname
@@ -120,8 +121,9 @@ for vm in vmset.findall('vm'):
                 # commented out the next line because an error about non-mutable state is reported even thought it still completes successfully
                 # print(result)
         if len(vm.findall('generic-driver')) > 0:
+            
             for generic_driver_name in generic_driver_names:
-                udpTunnelCmd = [pathToVirtualBox, "modifyvm", newvmName, "--nic"+str(netNum), "generic", "--nicgenericdrv"+str(netNum), "UDPTunnel", "--nicproperty"+str(netNum), ("dest=10.0.0."+host_id), "--nicproperty"+str(netNum), ("sport="+host_id), "--nicproperty"+str(netNum), ("dport="+host_id)]
+                udpTunnelCmd = [pathToVirtualBox, "modifyvm", newvmName, "--nic"+str(netNum), "generic", "--nicgenericdrv"+str(netNum), "UDPTunnel", "--nicproperty"+str(netNum), ("dest=10.0.1."+host_id), "--nicproperty"+str(netNum), ("sport="+host_id), "--nicproperty"+str(netNum), ("dport="+host_id)]
                 print("\nsetting up generic driver network adapter")
                 print("executing: ")
                 print(udpTunnelCmd)
