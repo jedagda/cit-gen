@@ -2,6 +2,11 @@ import subprocess
 import xml.etree.ElementTree as ET
 import sys
 
+#needed for warningdialog
+from src.gui.dialogs.WarningDialog import WarningDialog
+import gi; gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
 def printError(message):
     print "\r\n\r\n!!!!!!!!!!\r\nERROR:\r\n", message, "\r\n!!!!!!!!!!\r\n"
     print "Exiting..."
@@ -42,11 +47,19 @@ for vm in vmset.findall('vm'):
             print "VM not found: ", vmname
             print "Exiting"
             exit()
-        internalnets = vm.findall('internalnet-basename')
-        internalnetNames = []
-        for internalnet in internalnets:
-            internalnetNames.append(internalnet.text+ myBaseOutname + str(i))
-        print "Internal net names: ", internalnetNames
+        
+        if len(vm.findall('internalnet-basename')) > 0:
+            internalnets = vm.findall('internalnet-basename')
+            internalnetNames = []
+            for internalnet in internalnets:
+                internalnetNames.append(internalnet.text+ myBaseOutname + str(i))
+            print "Internal net names: ", internalnetNames
+        else:
+            generic_drivers = vm.findall('generic-driver')
+            generic_driver_names = []
+            for generic_driver in generic_drivers:
+                generic_driver_names.append(generic_driver.text + str(i))
+            print "Generic Driver names: ", generic_driver_names
 
         # clone the vm and give it a name ending with myBaseOutname
         cloneCmd = [pathToVirtualBox, "clonevm", vmname, "--register"]
@@ -65,6 +78,7 @@ for vm in vmset.findall('vm'):
                 except Exception:
                     printError(
                         "Using the link clone option requires that VMs contain a snapshot. No snapshot found for vm:" + vmname)
+                    WarningDialog(Gtk.Window(), "You need snapshots to clone!")
                     print "Exiting..."
                     exit()
             else:
@@ -85,15 +99,27 @@ for vm in vmset.findall('vm'):
 
         # internal network setup
         netNum = 1
-        for internalnetName in internalnetNames:		
-            intNetCmd = [pathToVirtualBox, "modifyvm", newvmName, "--nic"+str(netNum), "intnet", "--intnet"+str(netNum), internalnetName]
-            print("\nsetting up internal network adapter")
-            print("executing: ")
-            print(intNetCmd)
-            result = subprocess.check_output(intNetCmd)
-            netNum+=1
-            # commented out the next line because an error about non-mutable state is reported even thought it still completes successfully
-            # print(result)
+        if len(vm.findall('internalnet-basename')) > 0:
+
+            for internalnetName in internalnetNames:        
+                intNetCmd = [pathToVirtualBox, "modifyvm", newvmName, "--nic"+str(netNum), "intnet", "--intnet"+str(netNum), internalnetName]
+                print("\nsetting up internal network adapter")
+                print("executing: ")
+                print(intNetCmd)
+                result = subprocess.check_output(intNetCmd)
+                netNum+=1
+                # commented out the next line because an error about non-mutable state is reported even thought it still completes successfully
+                # print(result)
+        else:
+            # add generic driver/udp tunnel thing here.
+            for generic_driver_name in generic_driver_names:
+                udpTunnelCmd1 = [pathToVirtualBox, "modifyvm", newvmName, "--nic"+str(netNum), "generic", "--nicgenericdrv"+str(netNum), "UDPTunnel", "--nicproperty"+str(netNum), "dest=10.0.0.2", "--nicproperty"+str(netNum), "sport=10001", "--nicproperty"+str(netNum), "dport=10002"]
+                print("\nsetting up generic driver network adapter")
+                print("executing: ")
+                print(udpTunnelCmd1)
+                result = subprocess.check_output(udpTunnelCmd1)
+                netNum+=1
+
 
         # for some reason, the vms aren't placed into a group unless we execute an additional modify command
         try:
