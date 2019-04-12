@@ -35,7 +35,11 @@ baseOutname = vmset.find('base-outname').text
 
 vrdpBaseport = vmset.find('vrdp-baseport').text
 
-baseAddress = vmset.find('base-address').text
+try:
+    baseAddress = vmset.find('base-address').text
+except Exception:
+    baseAddress = "128"
+host_id = baseAddress
 
 # Checking if IP addresses of the clones are between 0 and 255
 if(int(baseAddress) <= 0 or (int(baseAddress) + int(numClones) - 1) >= 255):
@@ -45,7 +49,6 @@ if(int(baseAddress) <= 0 or (int(baseAddress) + int(numClones) - 1) >= 255):
 
 for vm in vmset.findall('vm'):
     myBaseOutname = baseOutname
-    myBaseAddress = baseAddress
     for i in range(1, numClones + 1):
         vmname = vm.find('name').text
 
@@ -68,7 +71,6 @@ for vm in vmset.findall('vm'):
             generic_driver_names = []
             for generic_driver in generic_drivers:
                 generic_driver_names.append(generic_driver.text + str(i))
-            host_id = str(int(myBaseAddress) + i-1)
             print "Generic Driver names: ", generic_driver_names
 
         # clone the vm and give it a name ending with myBaseOutname
@@ -129,6 +131,7 @@ for vm in vmset.findall('vm'):
                 print(udpTunnelCmd)
                 result = subprocess.check_output(udpTunnelCmd)
                 netNum+=1
+                host_id = str(int(host_id) + 1)
 
 
         # for some reason, the vms aren't placed into a group unless we execute an additional modify command

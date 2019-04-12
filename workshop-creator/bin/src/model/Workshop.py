@@ -58,7 +58,10 @@ class Workshop:
         self.linkedClones = vmset.find('linked-clones').text
         self.baseOutName = vmset.find('base-outname').text
         self.vrdpBaseport = vmset.find('vrdp-baseport').text
-        self.baseAddress = vmset.find('base-address').text
+        try:
+            self.baseAddress = vmset.find('base-address').text
+        except Exception:
+            self.baseAddress = "128"
 
         for vm in vmset.findall('vm'):
             currentVM = VM(vm.find('name').text)
