@@ -21,7 +21,7 @@ class Workshop:
         self.linkedClones = "true" # Bool
         self.baseOutName = "101" # String
         self.vrdpBaseport = "1011" # int
-        self.baseAddress = "101" # String
+        self.baseAddress = "128" # String
 
         self.vmList = [] # VM
         if vmName!=None:
