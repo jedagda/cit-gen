@@ -12,7 +12,6 @@ class NetworkAdapterWidget(Gtk.EventBox):
         super(NetworkAdapterWidget, self).__init__()
 
         self.outerHorBox = Gtk.Box(spacing=BOX_SPACING)
-        #self.label = Gtk.Label("Internalnet Basename:") # This is changed to Radio buttons
         self.internalnetButton = Gtk.RadioButton.new_with_label_from_widget(None, "Internalnet")
         self.udpTunnelButton = Gtk.RadioButton.new_with_label_from_widget(self.internalnetButton, "UDPTunnel")
         self.entry = Gtk.Entry()
@@ -26,7 +25,6 @@ class NetworkAdapterWidget(Gtk.EventBox):
     def initialize(self):
         self.add(self.outerHorBox)
 
-        #self.outerHorBox.pack_start(self.label, False, False, PADDING) # This is the radio buttons
         self.outerHorBox.pack_start(self.internalnetButton, False, False, PADDING)
         self.outerHorBox.pack_start(self.udpTunnelButton, False, False, PADDING)
         self.outerHorBox.pack_end(self.removeInetButton, False, False, PADDING)

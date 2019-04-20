@@ -35,6 +35,18 @@ baseOutname = vmset.find('base-outname').text
 
 vrdpBaseport = vmset.find('vrdp-baseport').text
 
+try:
+    baseAddress = vmset.find('base-address').text
+except Exception:
+    baseAddress = "128"
+host_id = baseAddress
+
+# Checking if IP addresses of the clones are between 0 and 255
+if(int(baseAddress) <= 0 or (int(baseAddress) + int(numClones) - 1) >= 255):
+    WarningDialog(Gtk.Window(), "Make sure all clone IP addresses are between 0-255")
+    exit()
+
+
 for vm in vmset.findall('vm'):
     myBaseOutname = baseOutname
     for i in range(1, numClones + 1):
@@ -54,7 +66,7 @@ for vm in vmset.findall('vm'):
             for internalnet in internalnets:
                 internalnetNames.append(internalnet.text+ myBaseOutname + str(i))
             print "Internal net names: ", internalnetNames
-        else:
+        if len(vm.findall('generic-driver')) > 0:
             generic_drivers = vm.findall('generic-driver')
             generic_driver_names = []
             for generic_driver in generic_drivers:
@@ -110,15 +122,16 @@ for vm in vmset.findall('vm'):
                 netNum+=1
                 # commented out the next line because an error about non-mutable state is reported even thought it still completes successfully
                 # print(result)
-        else:
-            # add generic driver/udp tunnel thing here.
+        if len(vm.findall('generic-driver')) > 0:
+            
             for generic_driver_name in generic_driver_names:
-                udpTunnelCmd1 = [pathToVirtualBox, "modifyvm", newvmName, "--nic"+str(netNum), "generic", "--nicgenericdrv"+str(netNum), "UDPTunnel", "--nicproperty"+str(netNum), "dest=10.0.0.2", "--nicproperty"+str(netNum), "sport=10001", "--nicproperty"+str(netNum), "dport=10002"]
+                udpTunnelCmd = [pathToVirtualBox, "modifyvm", newvmName, "--nic"+str(netNum), "generic", "--nicgenericdrv"+str(netNum), "UDPTunnel", "--nicproperty"+str(netNum), ("dest=10.0.1."+host_id), "--nicproperty"+str(netNum), ("sport="+host_id), "--nicproperty"+str(netNum), ("dport="+host_id)]
                 print("\nsetting up generic driver network adapter")
                 print("executing: ")
-                print(udpTunnelCmd1)
-                result = subprocess.check_output(udpTunnelCmd1)
+                print(udpTunnelCmd)
+                result = subprocess.check_output(udpTunnelCmd)
                 netNum+=1
+                host_id = str(int(host_id) + 1)
 
 
         # for some reason, the vms aren't placed into a group unless we execute an additional modify command

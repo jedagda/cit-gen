@@ -268,6 +268,7 @@ class AppWindow(Gtk.ApplicationWindow):
             self.baseWidget.linkedClonesEntry.set_active(self.holdClone)
             self.baseWidget.baseOutnameEntry.set_text(self.session.currentWorkshop.baseOutName)
             self.baseWidget.vrdpBaseportEntry.set_text(self.session.currentWorkshop.vrdpBaseport)
+            self.baseWidget.baseAddressEntry.set_text(self.session.currentWorkshop.baseAddress)
 
             self.actionBox.show_all()
 
@@ -375,7 +376,8 @@ class AppWindow(Gtk.ApplicationWindow):
                                           self.baseWidget.baseGroupNameEntry.get_text(),
                                           str(self.baseWidget.numClonesEntry.get_value_as_int()), self.holdSnaps,
                                           self.holdLinked, self.baseWidget.baseOutnameEntry.get_text(),
-                                          self.baseWidget.vrdpBaseportEntry.get_text())
+                                          self.baseWidget.vrdpBaseportEntry.get_text(),
+                                          self.baseWidget.baseAddressEntry.get_text())
 
         elif self.isParent == False:
 
@@ -469,7 +471,6 @@ class AppWindow(Gtk.ApplicationWindow):
                 return
 
         else:
-            print "\n\ndata[0] = ", data[0], "\n\n"
             self.vmWidget.removeTunnel(data[0] - len(self.vmWidget.inetBasenameWidgetList))
 
             i = data[0] - len(self.vmWidget.inetBasenameWidgetList)

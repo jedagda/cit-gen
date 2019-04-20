@@ -73,7 +73,7 @@ class VMWidget(Gtk.Box):
 
         self.sizeOfList=len(internalNetList)
         for internalNet in internalNetList:
-            inetWidget = NetworkAdapterWidget() #InternalnetBasenameWidget()
+            inetWidget = NetworkAdapterWidget()
             inetWidget.entry.set_text(internalNet)
             inetWidget.internalnetButton.set_active(True)
 
@@ -96,7 +96,6 @@ class VMWidget(Gtk.Box):
         for widget in self.udpTunnelWidgetList:
             widget.connect("button-press-event", eventHandler)
 
-    ### Changed to NetworkAdapterWidget thing
     # I think I should change the name of the function
     def addInet(self):
         inet = NetworkAdapterWidget()
