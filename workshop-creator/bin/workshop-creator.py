@@ -160,7 +160,7 @@ for vm in vmset.findall('vm'):
             #now these settings will help against the issue when users 
             #can't reconnect after an abrupt disconnect
             #https://www.virtualbox.org/ticket/2963
-            vrdpCmd = [pathToVirtualBox, "modifyvm", newvmName, "--vrdereusecon", "on", "vrdemulticon off"]
+            vrdpCmd = [pathToVirtualBox, "modifyvm", newvmName, "--vrdereusecon", "on", "--vrdemulticon off"]
             print("\Fix vrde for " + newvmName)
             print("\nexecuting: ")
             print(vrdpCmd)
