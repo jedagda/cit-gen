@@ -148,6 +148,7 @@ for vm in vmset.findall('vm'):
         # vrdp setup
         vrdpEnabled = vm.find('vrdp-enabled').text
         if vrdpEnabled and vrdpEnabled == 'true':
+			#set interface to vrde
             vrdpCmd = [pathToVirtualBox, "modifyvm", newvmName, "--vrde", "on", "--vrdeport", str(vrdpBaseport)]
             print("\nsetting up vrdp for " + newvmName)
             print("\nexecuting: ")
@@ -155,6 +156,17 @@ for vm in vmset.findall('vm'):
             result = subprocess.check_output(vrdpCmd)
             print(result)
             vrdpBaseport = str(int(vrdpBaseport) + 1)
+            
+            #now these settings will help against the issue when users 
+            #can't reconnect after an abrupt disconnect
+            #https://www.virtualbox.org/ticket/2963
+            vrdpCmd = [pathToVirtualBox, "modifyvm", newvmName, "--vrdereusecon", "on", "vrdemulticon off"]
+            print("\Fix vrde for " + newvmName)
+            print("\nexecuting: ")
+            print(vrdpCmd)
+            result = subprocess.check_output(vrdpCmd)
+            print(result)
+                       
         # finally create a snapshot after the vm is setup
         try:
             snapCmd = [pathToVirtualBox, "snapshot", newvmName, "take", "ready"]
